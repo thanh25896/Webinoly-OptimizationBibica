@@ -3,7 +3,6 @@ sudo apt install zip -y
 sudo apt install unzip -y
 sudo apt install htop -y
 sudo apt install screen -y
-screen -S bibica
 sudo apt update && sudo apt upgrade -y
 sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/webinoly/master/weby -O weby && sudo chmod +x weby && sudo ./weby -clean
 sudo sed -i "s|#timezone:America/Mexico_City|timezone:Asia/Ho_Chi_Minh|" /opt/webinoly/webinoly.conf
