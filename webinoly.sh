@@ -11,7 +11,7 @@ sudo sed -i "s|#wp-admin-auth:true|wp-admin-auth:false|" /opt/webinoly/webinoly.
 sudo sed -i "s|#header-cache-control:public, max-age=604800, immutable|header-cache-control:off|" /opt/webinoly/webinoly.conf
 sudo sed -i "s|#header-hsts:default|header-hsts:off|" /opt/webinoly/webinoly.conf
 sudo sed -i "s|#header-referrer:no-referrer-when-downgrade|header-referrer:off|" /opt/webinoly/webinoly.conf
-sudo sed -i "s|#header-xcto:true|header-xcto:off|" /opt/webinoly/webinoly.conf
+sudo sed -i "s|#header-xcto:true|header-xcto:false|" /opt/webinoly/webinoly.conf
 sudo sed -i "s|#header-xfo:sameorigin|header-xfo:off|" /opt/webinoly/webinoly.conf
 sudo sed -i "s|#header-xfo-url:<allow-from url>|header-xfo-url:off|" /opt/webinoly/webinoly.conf
 sudo sed -i "s|#php-max-mem:192|php-max-mem:512|" /opt/webinoly/webinoly.conf
