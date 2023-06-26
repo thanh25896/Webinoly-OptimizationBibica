@@ -3,6 +3,7 @@ sudo apt install zip -y
 sudo apt install unzip -y
 sudo apt install htop -y
 sudo apt install screen -y
+sudo apt remove iptables-persistent -y && sudo ufw disable && sudo iptables -F
 locale-gen en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
