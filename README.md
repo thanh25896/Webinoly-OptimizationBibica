@@ -16,7 +16,7 @@ PHP 8.2.7, MariaDB v10.11.4, Nginx v1.24.0
 ```shell
 sudo apt update && sudo apt upgrade -y && sudo reboot
 ```
-3. Cài đặt Webinoly PHP 7.4
+3. Cài đặt Webinoly PHP 8.2
 ```shell
 sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/webinoly82.sh -O webinoly_mod.sh && sudo chmod +x webinoly_mod.sh && sudo ./webinoly_mod.sh
 ```
