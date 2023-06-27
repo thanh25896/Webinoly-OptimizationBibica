@@ -14,6 +14,6 @@ sudo stack -lemp -build=light
 sudo apt remove iptables-persistent -y
 sudo ufw disable
 sudo iptables -F
-sudo apt update -y
+sudo apt update && sudo apt upgrade -y
 sudo webinoly -verify
 sudo webinoly -info
