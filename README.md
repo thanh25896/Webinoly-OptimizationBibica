@@ -1,26 +1,26 @@
 # Webinoly PHP 7.4
 PHP v7.4.33, MariaDB v10.11.4, Nginx v1.24.0
 1. Login root
-2. Cập nhập OS và khởi động lại hệ thống
+2. Update IOS and reboot the system
 ```shell
 sudo apt update && sudo apt upgrade -y && sudo reboot
 ```
-3. Cài đặt Webinoly PHP 7.4
+3. Install Webinoly PHP 7.4
 ```shell
 sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/webinoly74.sh -O webinoly_mod.sh && sudo chmod +x webinoly_mod.sh && sudo ./webinoly_mod.sh
 ```
 # Webinoly PHP 8.2
 PHP 8.2.7, MariaDB v10.11.4, Nginx v1.24.0
 1. Login root
-2. Cập nhập OS và khởi động lại hệ thống
+2. Update IOS and reboot the system
 ```shell
 sudo apt update && sudo apt upgrade -y && sudo reboot
 ```
-3. Cài đặt Webinoly PHP 8.2
+3. Install Webinoly PHP 8.2
 ```shell
 sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/webinoly82.sh -O webinoly_mod.sh && sudo chmod +x webinoly_mod.sh && sudo ./webinoly_mod.sh
 ```
-# Cấu hình
+# Setting
 PHP
 ```shell
 max_execution_time = 6000
@@ -39,7 +39,7 @@ opcache.interned_strings_buffer=16
 opcache.max_accelerated_files=100000
 opcache.max_wasted_percentage=10
 ```
-Không cài đặt
+Not installed
 ```shell
 Let’s Encrypt
 Duply & Duplicity (Backups)
@@ -48,13 +48,13 @@ Redis
 Memcached
 phpMyAdmin
 ```
-Tùy chỉnh nhỏ:
+Small customization:
 ```shell
 File swap cố định 2GB
 Chuyển về giờ Việt Nam Hồ Chí Minh
 Tắt HTTP Authentication
 ```
-Xóa các Header
+Delete Headers
 ```shell
 Referrer Policy Header successfully disabled!
 HSTS Header successfully disabled!
@@ -66,4 +66,4 @@ X-XSS-Protection Header successfully disabled!
 X-Content-Type-Options Header successfully disabled!
 X-Frame-Options Header successfully disabled!
 ```
-Tắt firewall trên Ubuntu
+Turn off the firewall on Ubuntu
