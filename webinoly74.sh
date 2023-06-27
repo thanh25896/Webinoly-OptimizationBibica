@@ -15,5 +15,7 @@ sudo apt remove iptables-persistent -y
 sudo ufw disable
 sudo iptables -F
 sudo apt update && sudo apt upgrade -y
+sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/php.ini -O /etc/php/7.4/fpm/php.ini
+sudo service php7.4-fpm restart
 sudo webinoly -verify
 sudo webinoly -info
