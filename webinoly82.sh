@@ -8,7 +8,7 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/webinoly/master/weby -O weby && sudo chmod +x weby && sudo ./weby -clean
 sudo rm /opt/webinoly/webinoly.conf
-sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/webinoly/master/webinoly_php82.conf -O /opt/webinoly/webinoly.conf
+sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/webinoly_php82.conf -O /opt/webinoly/webinoly.conf
 sudo stack -lemp -build=light
 sudo apt remove iptables-persistent -y
 sudo ufw disable
