@@ -50,9 +50,9 @@ phpMyAdmin
 ```
 Small customization:
 ```shell
-File swap cố định 2GB
-Chuyển về giờ Việt Nam Hồ Chí Minh
-Tắt HTTP Authentication
+Fixed swap file 2GB
+Change to Vietnam time Ho Chi Minh
+Turn off HTTP Authentication
 ```
 Delete Headers
 ```shell
