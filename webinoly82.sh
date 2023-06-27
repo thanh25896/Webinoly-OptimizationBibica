@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo apt update && sudo apt upgrade -y
 sudo apt update -y
 sudo apt install zip -y
 sudo apt install unzip -y
@@ -18,5 +19,6 @@ sudo rm /etc/mysql/my.cnf
 sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/webinoly/master/my.cnf -O /etc/mysql/my.cnf
 systemctl restart mariadb
 sudo apt update -y
+sudo apt update && sudo apt upgrade -y
 sudo webinoly -verify
 sudo webinoly -info
