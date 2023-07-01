@@ -17,7 +17,7 @@ sudo iptables -F
 sudo apt update && sudo apt upgrade -y
 sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/php_vm_standard_a1_flex.ini -O /etc/php/7.4/fpm/php.ini
 sudo service php7.4-fpm restart
-sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/my_vm_standard_a1_flex.cnf -O /etc/mysql/my.cnf
-sudo service mysql restart
+#sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/my_vm_standard_a1_flex.cnf -O /etc/mysql/my.cnf
+#sudo service mysql restart
 sudo webinoly -verify
 sudo webinoly -info
