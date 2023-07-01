@@ -30,9 +30,12 @@ socket = /run/mysqld/mysqld.sock
 
 # The MariaDB configuration file
 [mysqld]
-innodb_buffer_pool_size = 20GB
+innodb_buffer_pool_size = 17GB
 innodb_log_file_size = 100M
 innodb_buffer_pool_instances = 64
-innodb_io_capacity = 5000
+innodb_io_capacity = 50000
 max_binlog_size = 100M
 expire_logs_days = 3
+query_cache_type = 1
+query-cache-size = 128M
+query_cache_limit = 16M
