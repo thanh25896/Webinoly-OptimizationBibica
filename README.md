@@ -62,7 +62,7 @@ PHP v7.4.33, MariaDB v10.11.4, Nginx v1.24.0
 
 <ul>
  	<li>OPcache 1GB</li>
- 	<li>innodb_buffer_pool_size = 20GB</li>
+ 	<li>innodb_buffer_pool_size = 17GB</li>
 </ul>
 
 1. Login root
