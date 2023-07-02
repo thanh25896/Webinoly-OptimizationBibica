@@ -57,7 +57,7 @@ X-Frame-Options Header successfully disabled!
 ```
 Turn off the firewall on Ubuntu
 
-# Webinoly for Oracle VM.Standard.A1.Flex 4 OCPU 24 GB RAM
+# Oracle VM.Standard.A1.Flex 4 OCPU 24 GB RAM
 PHP v7.4.33, MariaDB v10.11.4, Nginx v1.24.0
 
 <ul>
