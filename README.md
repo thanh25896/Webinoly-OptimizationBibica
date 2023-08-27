@@ -9,10 +9,7 @@ sudo apt update && sudo apt upgrade -y && sudo reboot
 ```shell
 sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/webinoly74.sh -O webinoly_mod.sh && sudo chmod +x webinoly_mod.sh && sudo ./webinoly_mod.sh
 ```
-# Webinoly PHP 8.2 HTTP/3
-```shell
-sudo wget --no-check-certificate https://raw.githubusercontent.com/bibicadotnet/Webinoly-Optimization/master/webinoly_php82_http3.sh -O webinoly_mod.sh && sudo chmod +x webinoly_mod.sh && sudo ./webinoly_mod.sh
-```
+
 # Setting
 PHP
 ```shell
