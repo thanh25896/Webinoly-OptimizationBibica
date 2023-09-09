@@ -16,7 +16,7 @@ PHP
 max_execution_time = 6000
 max_input_time = 6000
 max_input_vars = 5000
-memory_limit = 512M
+memory_limit = 256
 upload_max_filesize = 1000000M
 max_file_uploads = 6000
 post_max_size = 1000000M
