@@ -100,11 +100,12 @@ fi
 if [[ -n $subfolder && ! ( $subfolder =~ ^\/([A-Za-z0-9_\/\-]+)?[^\/]$ ) ]]; then
 	echo "${red}[ERROR] Please, enter a valid value for subfolder!${end}"
 	exit 1
+# Only these commands are supported with subfolders (Parked is not supported, for instance)
 elif [[ -n $subfolder && -z $delete && -z $cache && -z $multisite_convert && -z $clone_from && -z $replace_content && -z $wp && -z $html && -z $php && -z $mysql && -z $proxy && -z $env && -z $info ]]; then
 	echo "${red}[ERROR] Subfolder option not supported!${end}"
 	exit 1
 # Clone-from empty is here to allow -cache=on when cloning a site
-elif [[ -n $subfolder && -z $wp && ( $cache == "on" || -n $multisite_convert || -n $replace_content ) && $(is_subfolder $domain $subfolder) != "wp" && -z $clone_from ]]; then
+elif [[ -n $subfolder && -z $wp && ( $cache == "on" || -n $multisite_convert || -n $replace_content || -n $env ) && $(is_subfolder $domain $subfolder) != "wp" && -z $clone_from ]]; then
 	echo "${red}[ERROR] Subfolder not found or is not a WP site!${end}"
 	exit 1
 else
@@ -126,10 +127,11 @@ if [[ -n $delete_all ]]; then
 elif [[ -n $mysql || ( -n $php && -n $domain ) ]]; then
 	if [[ -n $domain ]]; then
 		full_empty_not_allowed
-		if [[ -f /etc/nginx/sites-available/$domain && -n $subfolder && $(is_subfolder $domain $subfolder) != "false" ]]; then
+		if [[ -f /etc/nginx/sites-available/$domain && -n $subfolder && $(is_subfolder $domain $subfolder) != "false" && $(is_subfolder $domain $subfolder) != "empty" ]]; then
 			echo "${red}[ERROR] Subfolder${blu} $subfolder ${red}already exists!${end}"
 			exit 1
-		elif [[ -n $subfolder ]]; then	
+		elif [[ -n $subfolder ]]; then
+			[[ $(is_subfolder $domain $subfolder) == "empty" ]] && echo "${dim}[INFO] Subfolder already exists, but it's empty!${end}"
 			[[ ! -f /etc/nginx/sites-available/$domain ]] && create_empty_site
 			php_subfolder
 			sudo mkdir -p /var/www/$domain/htdocs$subfolder
@@ -161,7 +163,7 @@ elif [[ -n $empty && -n $domain ]]; then
 elif [[ -n $html && -n $domain ]]; then
 	full_empty_not_allowed
 	if [[ -f /etc/nginx/sites-available/$domain && -n $subfolder && $(is_subfolder $domain $subfolder) != "false" ]]; then
-		echo "${red}[ERROR] Subfolder${blu} $subfolder ${red}already exists!${end}"
+		echo "${red}[ERROR] Subfolder${blu} $subfolder ${red}already exists! ${dim}(Just put the HTML files in it, a separate conf is not needed)${end}"
 		exit 1
 	fi
 	
@@ -197,8 +199,15 @@ elif [[ -n $wp && -n $domain ]]; then
 		[[ -n $env ]] && sudo site $domain -env=$env
 	else
 		if [[ -f /etc/nginx/sites-available/$domain && -n $subfolder && $type == [123] && $(is_subfolder $domain $subfolder) != "false" ]]; then
-			echo "${red}[ERROR] Subfolder${blu} $subfolder ${red}already exists!${end}"
-			exit 1
+			# Check if subfolder is empty!
+			if [[ $(is_subfolder $domain $subfolder) == "empty" ]]; then
+				# Install WP in an empty folder!
+				echo "${dim}[INFO] Subfolder already exists, but it's empty!${end}"
+				wpinstall
+			else
+				echo "${red}[ERROR] Subfolder${blu} $subfolder ${red}already exists and it's not empty!${end}"
+				exit 1
+			fi
 		elif [[ -f /etc/nginx/sites-available/$domain && -n $subfolder && $type == [123] ]]; then
 			wpinstall
 		else

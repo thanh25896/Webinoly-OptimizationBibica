@@ -4,7 +4,7 @@
 # Prevent 'tput' errors when running from Cron
 [[ -z $TERM || $TERM == "unknown" || $TERM == "dumb" ]] && export TERM=dumb
 
-readonly app_version="1.17.4"
+readonly app_version="1.17.6"
 readonly svr_version="1.8"
 readonly os_ubuntu_supported=(bionic focal jammy) # https://ubuntu.com/about/release-cycle
 readonly php_supported=(7.4 8.0 8.1 8.2) # https://www.php.net/supported-versions.php
@@ -692,6 +692,8 @@ wp_conf_retrieve() {
 			local maindom=$1
 		fi
 		
+		# Parked site don't have support for subfolders, but we send it here as double check.
+		# If we send only the domain and the original request contains the subfolder, we can get a wrong value in return.
 		if [[ $(is_wp_multisite $maindom $4) =~ ^(subdomain|subdirectory)$ ]]; then
 			local dbq="USE $wp_dbname; SELECT blog_id FROM ${wp_dbpref}blogs WHERE domain='$1' OR domain='www.$1';"
 			if [[ $wp_dbhost_host == "localhost" && $(check_mysql_connection localhost $mysql_param) == "true" ]]; then
@@ -1173,7 +1175,9 @@ is_subfolder() {
 			echo "proxy"
 		elif [[ $(is_html $1 $2) == "true" ]]; then
 			echo "html"
-		elif [[ -d /var/www/$1/htdocs/$2 ]]; then
+		elif [[ -d /var/www/${1}/htdocs${2} && -z $(find /var/www/${1}/htdocs${2} -maxdepth 1 -type f | head -n 1) ]]; then
+			echo "empty"
+		elif [[ -d /var/www/${1}/htdocs${2} ]]; then
 			echo "true"
 		else
 			echo "false"
@@ -1797,7 +1801,7 @@ custom_cache_global() {
 			[[ -n $skip_cache ]] && local value=$skip_cache
 			
 			sudo sed -Ei "/^# Value: $(escaped_string $value)( .*)?$/,/^# CacheRuleEnd/{/.*/d}" $confile
-			[[ ! -s $confile || -z $(grep '[^[:space:]]' $confile ) ]] && sudo rm $confile # Better because also check for files containing only empty-spaces!
+			[[ -f $confile && ( ! -s $confile || -z $(grep '[^[:space:]]' $confile )) ]] && sudo rm $confile # Better because also check for files containing only empty-spaces!
 		fi
 		echo "${gre}Cache rule successfully removed!${end}"
 	else

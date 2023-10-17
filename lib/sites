@@ -11,7 +11,7 @@ warning_messages() {
 		if [[ $type == [123] && $dbhost != "localhost" && $(conf_read dbrole) =~ ^(all|grant)$ ]]; then
 			echo "${dim}[WARNING] You have set '$(conf_read dbrole)' as default privileges, some external DB services may not support it!${end}"
 		fi
-		if [[ $type == [123] && $(conf_read wp-admin-auth) != "purged" && ! -s /etc/nginx/.htpasswd && ! -s /etc/nginx/apps.d/.htpasswd-$domain ]]; then
+		if [[ $type == [123] && $(conf_read wp-admin-auth) != "purged" && ( ! -s /etc/nginx/.htpasswd || -z $(grep '[^[:space:]]' /etc/nginx/.htpasswd )) && ( ! -s /etc/nginx/apps.d/.htpasswd-$domain || -z $(grep '[^[:space:]]' /etc/nginx/apps.d/.htpasswd-$domain )) ]]; then
 			echo "${dim}[WARNING] HTTP Authentication Credentials not found and you may need it to complete the WordPress installation process!!${end}"
 		fi
 		if [[ $(conf_read login-www-data) != "true" && (( -z $forward && -z $proxy && -z $parked && -z $mysql ) || ( -n $mysql && -n $domain )) ]]; then
@@ -602,14 +602,14 @@ deletesite() {
 	# In case of custom cache
 	if [[ -f /etc/nginx/conf.d/webinoly.conf ]]; then
 		sudo sed -i "/^fastcgi_cache_path \/run\/nginx-cache\/$(echo $domain | sed 's/[^0-9A-Za-z]/_/g').*/d" /etc/nginx/conf.d/webinoly.conf
-		[[ ! -s /etc/nginx/conf.d/webinoly.conf ]] && sudo rm /etc/nginx/conf.d/webinoly.conf
+		[[ -f /etc/nginx/conf.d/webinoly.conf && ( ! -s /etc/nginx/conf.d/webinoly.conf || -z $(grep '[^[:space:]]' /etc/nginx/conf.d/webinoly.conf )) ]] && sudo rm /etc/nginx/conf.d/webinoly.conf
 	fi
 	
 	# Check for Reverse Proxy upstreams
 	if [[ -f /etc/nginx/conf.d/upstream_proxy.conf ]]; then
 		local domvar=$(echo "$domain" | sed "s/[^0-9A-Za-z]/_/g")
 		sudo sed -i "/upstream ${domvar}/,/} #End/{/.*/d}" /etc/nginx/conf.d/upstream_proxy.conf
-		[[ ! -s /etc/nginx/conf.d/upstream_proxy.conf ]] && sudo rm /etc/nginx/conf.d/upstream_proxy.conf
+		[[ -f /etc/nginx/conf.d/upstream_proxy.conf && ( ! -s /etc/nginx/conf.d/upstream_proxy.conf || -z $(grep '[^[:space:]]' /etc/nginx/conf.d/upstream_proxy.conf )) ]] && sudo rm /etc/nginx/conf.d/upstream_proxy.conf
 	fi
 	
 	echo "${gre}Site${blu} $domain ${gre}has been successfully deleted!${end}"
@@ -654,7 +654,7 @@ deletesite_subfolder() {
 		# In case of custom cache
 		if [[ -f /etc/nginx/conf.d/webinoly.conf ]]; then
 			sudo sed -i "/^fastcgi_cache_path \/run\/nginx-cache\/$(echo $domain | sed 's/[^0-9A-Za-z]/_/g')${subname} .*/d" /etc/nginx/conf.d/webinoly.conf
-			[[ ! -s /etc/nginx/conf.d/webinoly.conf ]] && sudo rm /etc/nginx/conf.d/webinoly.conf
+			[[ -f /etc/nginx/conf.d/webinoly.conf && ( ! -s /etc/nginx/conf.d/webinoly.conf || -z $(grep '[^[:space:]]' /etc/nginx/conf.d/webinoly.conf )) ]] && sudo rm /etc/nginx/conf.d/webinoly.conf
 		fi
 			
 		echo "${gre}${dim}Subfolder${blu} $subfolder ${gre}from${blu} $domain ${gre}has been successfully deleted!${end}"
@@ -668,7 +668,7 @@ deletesite_subfolder() {
 	if [[ -f /etc/nginx/conf.d/upstream_proxy.conf ]]; then
 		local domvar=$(echo "$domain$subfolder" | sed "s/[^0-9A-Za-z]/_/g")
 		sudo sed -i "/upstream ${domvar}/,/} #End/{/.*/d}" /etc/nginx/conf.d/upstream_proxy.conf
-		[[ ! -s /etc/nginx/conf.d/upstream_proxy.conf ]] && sudo rm /etc/nginx/conf.d/upstream_proxy.conf
+		[[ -f /etc/nginx/conf.d/upstream_proxy.conf && ( ! -s /etc/nginx/conf.d/upstream_proxy.conf || -z $(grep '[^[:space:]]' /etc/nginx/conf.d/upstream_proxy.conf )) ]] && sudo rm /etc/nginx/conf.d/upstream_proxy.conf
 	fi
 	
 	sudo rm -rf /var/www/$domain/htdocs$subfolder
@@ -807,7 +807,7 @@ createsite() {
 
 	# Activate FastCgi cache
 	if [[ $cache == "on" && $type == [123] ]]; then
-		sudo sed -i '/php.conf/c \	include common/wpfc.conf;' /etc/nginx/sites-available/$domain
+		sudo sed -i '/php[x]*\.conf/c \	include common/wpfc.conf;' /etc/nginx/sites-available/$domain
 		[[ -z $wp_cache_plugins || $wp_cache_plugins == "on" ]] && wp_cache_plugins
 		echo "${gre}WordPress Cache successfully enabled!${end}"
 	fi
@@ -935,7 +935,7 @@ redirection_manager() {
 		if [[ -f /etc/nginx/apps.d/$domain-nginx.conf ]]; then
 			sudo sed -Ei '/^# RedirectFrom: '$(escaped_string $from)'( .*)?$/,/^# RedirectEnd/{/.*/d}' /etc/nginx/apps.d/$domain-nginx.conf
 			
-			if [[ ! -s /etc/nginx/apps.d/$domain-nginx.conf ]]; then
+			if [[ -f /etc/nginx/apps.d/$domain-nginx.conf && ( ! -s /etc/nginx/apps.d/$domain-nginx.conf || -z $(grep '[^[:space:]]' /etc/nginx/apps.d/$domain-nginx.conf )) ]]; then
 				sudo rm /etc/nginx/apps.d/$domain-nginx.conf
 				sudo sed -i "/$domain-nginx.conf;/d" /etc/nginx/sites-available/$domain
 			fi
@@ -1311,14 +1311,15 @@ reverse_proxy() {
 	elif [[ -f /etc/nginx/sites-available/$domain && -n $dedicated_reverse_proxy && $(is_empty_root_site $domain) != "full" && $(is_dedicated_proxy_domain $domain) != "true" ]]; then
 		echo "${red}[ERROR] Main site is not a Dedicated Reverse Proxy site!${end}"
 		exit 1
-	elif [[ $(is_empty_root_site $domain) == "full" && $(is_dedicated_proxy_domain $domain) == "false" ]]; then
-		echo "${red}[ERROR] This domain is currently set as Empty (blank), to create a site you need to add your own NGINX configuration. ${dim}(/var/www/example.com/*-nginx.conf)!${end}"
-		exit 1
 	elif [[ $dedicated_reverse_proxy != "simple" && -n $url_path ]]; then
 		# URI part (subfolders) are not allowed because the proxy configuration we are using includes the static files location, this location block is using regex which is not allowed!
 		# Dedicated reverse proxy are also affected (don't have static file location block), but subfolders are not allowed in upstream servers.
 		echo "${red}[ERROR] Subfolder in your endpoint or upstream server is not supported!${dim} (URI: $url_path)${end}"
 		exit 1
+	elif [[ $(is_empty_root_site $domain) == "full" && $(is_dedicated_proxy_domain $domain) == "false" ]]; then
+		# In case you have intentionally created an empty site with custom conf, it can interfere.
+		# We allow it because it should be common having a subfolder and remove it, leaving an empty site that can fully support a new dedicated site.
+		echo "${red}${dim}[WARNING] This domain already exists and it's currently set as Empty (blank), please be sure not to have had any other custom Nginx configuration added by you that can interfere with this site.${end}"
 	fi
 	
 	if [[ ( -z $subfolder || ( -n $subfolder && ! -f /etc/nginx/sites-available/$domain )) && $(is_empty_root_site $domain) == "false" ]]; then
@@ -1496,7 +1497,7 @@ wp_cache() {
 	elif [[ $cache == "on" ]]; then
 		api-events_update si8
 		if [[ $(is_wp $domain $subfolder) == "true" && $(is_cache $domain $subfolder) == "false" ]]; then
-			[[ -z $subfolder ]] && sudo sed -i '/ common\/php.conf/c \	include common/wpfc.conf;' /etc/nginx/sites-available/$domain
+			[[ -z $subfolder ]] && sudo sed -i '/ common\/php[x]*\.conf/c \	include common/wpfc.conf;' /etc/nginx/sites-available/$domain
 			[[ -n $subfolder ]] && sudo sed -i "/ apps.d\/$domain$subname-php.conf;/c \	include apps.d/$domain$subname-wpfc.conf;" /etc/nginx/sites-available/$domain
 			if [[ $(is_parked $domain) == "false" && ( ! -d /var/www/$domain/htdocs$subfolder/wp-content/plugins/nginx-helper || ! -d /var/www/$domain/htdocs$subfolder/wp-content/plugins/redis-cache ) ]]; then
 				if [[ -z $wp_cache_plugins ]]; then
@@ -1557,7 +1558,7 @@ wp_cache() {
 			else
 				echo "${gre}Custom Nginx Cache configuration not found! ${end}"
 			fi
-			[[ -f /etc/nginx/conf.d/webinoly.conf && ! -s /etc/nginx/conf.d/webinoly.conf ]] && sudo rm /etc/nginx/conf.d/webinoly.conf
+			[[ -f /etc/nginx/conf.d/webinoly.conf && ( ! -s /etc/nginx/conf.d/webinoly.conf || -z $(grep '[^[:space:]]' /etc/nginx/conf.d/webinoly.conf )) ]] && sudo rm /etc/nginx/conf.d/webinoly.conf
 		elif [[ -n $query_string_never_cache || $query_string_cache || $skip_cache || -n $skip_cookie_cache ]]; then
 			custom_cache_global -site
 		elif [[ -n $query_string_cache_default ]]; then
@@ -1588,10 +1589,8 @@ wp_cache() {
 			
 			echo "${gre}Custom Proxy Cache in${blu} $domain$subfolder ${gre}has been successfully enabled! ${end}"
 		elif [[ $(is_cache $domain $subfolder) == "false" ]]; then
-			[[ -z $subfolder ]] && sudo sed -i "/ common\/php.conf/c \	include apps.d/$domain$subname-${fn}.conf;" /etc/nginx/sites-available/$domain
-			[[ -z $subfolder ]] && sudo sed -i "/ common\/phpx.conf/c \	include apps.d/$domain$subname-${fn}.conf;" /etc/nginx/sites-available/$domain
-			[[ -n $subfolder ]] && sudo sed -i "/ apps.d\/$domain$subname-php.conf;/c \	include apps.d/$domain$subname-${fn}.conf;" /etc/nginx/sites-available/$domain
-			[[ -n $subfolder ]] && sudo sed -i "/ apps.d\/$domain$subname-phpx.conf;/c \	include apps.d/$domain$subname-${fn}.conf;" /etc/nginx/sites-available/$domain
+			[[ -z $subfolder ]] && sudo sed -i "/ common\/php[x]*\.conf/c \	include apps.d/$domain$subname-${fn}.conf;" /etc/nginx/sites-available/$domain
+			[[ -n $subfolder ]] && sudo sed -i "/ apps.d\/$domain$subname-php[x]*\.conf;/c \	include apps.d/$domain$subname-${fn}.conf;" /etc/nginx/sites-available/$domain
 			
 			# Creates the custom Webinoly Cache File (.cnf) only if not exists.
 			if [[ ! -f /etc/nginx/apps.d/$domain$subname-${fn}.conf ]]; then
